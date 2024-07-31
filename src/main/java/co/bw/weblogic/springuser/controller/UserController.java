@@ -2,7 +2,11 @@ package co.bw.weblogic.springuser.controller;
 
 import co.bw.weblogic.springuser.model.User;
 import co.bw.weblogic.springuser.service.UserService;
+import co.bw.weblogic.springuser.util.HttpResponse;
+import co.bw.weblogic.springuser.util.UsernameExistException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,9 +20,15 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/")
-    public User saveUser(@RequestBody User user) {
-        return userService.save(user);
+    public ResponseEntity<HttpResponse<User>> saveUser(@RequestBody User user) throws UsernameExistException {
+        HttpResponse<User> response = userService.save(user);
+        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getHttpStatusCode()));
     }
+
+//    private ResponseEntity<HttpResponse> response(HttpStatus httpStatus, String message) {
+//        return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(),
+//                message), httpStatus);
+//    }
 
     @GetMapping("/")
     public List<User> getAllUsers() {
